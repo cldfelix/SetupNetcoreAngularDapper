@@ -1,0 +1,339 @@
+<h1>Tabela Usuarios</h1>
+<form action="">
+  <div class="form-control mb-2">
+    <label for="">
+      Filtrar:
+    </label>
+    <input type="text" class="form-group mr-2"
+    [(ngModel)]="filtroNomeUsuario"
+    name="filtroNome"
+    placeholder="Filtrar por Nome">
+    <!-- <button class="btn btn-outline-success">Buscar</button> -->
+  </div>
+  <div>
+    <button class="btn btn-outline-secondary" (click)="openModal(template)">
+      Novo Usuário
+    </button>
+  </div>
+  <!-- <div class="form-control mb-2">
+  <label class="checkbox-inline"><input type="checkbox" value="0">Todos</label>
+  <label class="checkbox-inline"><input type="checkbox" value="1">Ativos</label>
+  <label class="checkbox-inline"><input type="checkbox" value="2">Inativos</label>
+  </div> -->
+</form>
+
+<table class="table table-striped">
+<thead class="thead-dark">
+  <tr>
+    <th>Id#</th>
+    <th>Nome</th>
+    <th>Email</th>
+    <th>Password</th>
+    <th>Sexo</th>
+    <th>Data de Nascimento</th>
+    <th>Ativo</th>
+    <th></th>
+  </tr>
+</thead>
+<tbody>
+   <tr *ngFor="let usuario of usuariosFiltrados">
+    <th>{{usuario?.id}}</th>
+    <th>{{usuario?.nome}}</th>
+    <th>{{usuario?.email}}</th>
+    <th>{{usuario?.password}}</th>
+    <th>{{usuario?.sexo}}</th>
+    <th>{{usuario?.dataNascimento| date: 'dd/MM/yyyy'}}</th>
+    <th>{{usuario?.ativo ? 'Sim': 'Não'}}</th>
+    <th>
+      <div class="btn-group">
+        <button class="btn btn-sm btn-outline-warning"
+        tooltip="Editar"
+        (click)="openModal(editar, usuario)"
+        ><i class="far fa-edit"></i></button>
+
+      </div>
+
+    </th>
+  </tr>
+  <tr *ngIf="usuariosFiltrados?.length < 1">
+    <th colspan="8" >Nenhum dado encontrado</th>
+  </tr>
+</tbody>
+</table>
+
+
+
+
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Novo usuário</h4>
+    <button type="button" class="close pull-right"
+    aria-label="Close" (click)="modalRef.hide()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <!-- <div class="btn-group" dropdown>
+    <button type="button" class="btn btn-danger">Action</button>
+    <button id="button-split" type="button" dropdownToggle class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+            aria-controls="dropdown-split">
+      <span class="caret"></span>
+      <span class="sr-only">Split button!</span>
+    </button>
+    <ul id="dropdown-split" *dropdownMenu class="dropdown-menu"
+        role="menu" aria-labelledby="button-split">
+        <li role="menuitem"><a class="dropdown-item" href="#">Sexo</a></li>
+        <li role="menuitem" *ngFor="let item of sexos"><a class="dropdown-item" href="#">{{item.descricao}}</a></li>
+    </ul>
+  </div> -->
+
+  <form [formGroup]="formUsuario">
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label>Nome</label>
+        <input type="text"
+        [ngClass]="{'is-invalid': formUsuario.get('nome').errors
+      && formUsuario.get('nome').touched
+
+      }"
+
+        class="form-control" formControlName="nome">
+        <div *ngIf="formUsuario.get('nome').hasError('required') && formUsuario.get('nome').touched" class="invalid-feedback">
+          Nome é requerido
+        </div>
+        <div *ngIf="formUsuario.get('nome').hasError('minlength') && formUsuario.get('nome').touched" class="invalid-feedback">
+          Tamanho mínimo de 3 caracteres
+        </div>
+
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>Email</label>
+        <input type="text"
+        [ngClass]="{'is-invalid': formUsuario.get('email').errors
+        && formUsuario.get('email').touched
+      }"
+        class="form-control" formControlName="email">
+        <div class="invalid-feedback">
+          Email é obrigatório
+        </div>
+      </div>
+      <div class="form-group col-md-6">
+        <label>Senha</label>
+        <input type="text"
+        [ngClass]="{'is-invalid': formUsuario.get('password').errors
+        && formUsuario.get('password').touched
+      }"
+
+        class="form-control" formControlName="password">
+        <div class="invalid-feedback">
+          Password é obrigatório
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label>Sexo</label>
+        <select class="form-control"
+        [ngClass]="{'is-invalid': formUsuario.get('idSexo').errors
+        && formUsuario.get('idSexo').touched}"
+        formControlName="idSexo"
+        >
+          <option *ngFor="let sexo of sexos" [value]=sexo?.id>{{sexo?.descricao}}</option>
+       </select>
+
+        <div class="invalid-feedback">
+          Sexo é obrigatório
+        </div>
+      </div>
+      <div class="form-group col-md-8">
+        <label>Data de Nascimento</label>
+        <input type="text"
+        bsDatepicker
+        [ngClass]="{'is-invalid': formUsuario.get('dataNascimento').errors
+        && formUsuario.get('dataNascimento').touched}"
+        class="form-control" formControlName="dataNascimento">
+        <div class="invalid-feedback">
+          Data de Nascimento é obrigatório
+        </div>
+      </div>
+    </div>
+    <!-- <div class="form-row">
+      <div class="form-group col-md-8">
+        <label>Telefone</label>
+        <input type="text" class="form-control" [formGroupName]="name">
+      </div>
+      <div class="form-group col-md-4">
+        <label>Email</label>
+        <input type="text" class="form-control" [formGroupName]="name">
+      </div>
+    </div> -->
+  </form>
+
+  <!-- <p>Form Value: {{formUsuario.value | json}}</p>
+<p>Form Status: {{formUsuario.status | json}}</p> -->
+
+  <br>
+  <button class="btn btn-secondary" (click)="closeModal(template)">
+    Fechar
+  </button>
+  <button class="btn btn-primary"
+  [disabled]="!formUsuario.valid"
+  (click)="createUsuario(template)">
+    Salvar Alterações
+  </button>
+  <br>
+  <br>
+</div>
+</ng-template>
+
+<ng-template #editar>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Editar usuário</h4>
+    <button type="button" class="close pull-right"
+    aria-label="Close" (click)="modalRef.hide()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <!-- <div class="btn-group" dropdown>
+    <button type="button" class="btn btn-danger">Action</button>
+    <button id="button-split" type="button" dropdownToggle class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+            aria-controls="dropdown-split">
+      <span class="caret"></span>
+      <span class="sr-only">Split button!</span>
+    </button>
+    <ul id="dropdown-split" *dropdownMenu class="dropdown-menu"
+        role="menu" aria-labelledby="button-split">
+        <li role="menuitem"><a class="dropdown-item" href="#">Sexo</a></li>
+        <li role="menuitem" *ngFor="let item of sexos"><a class="dropdown-item" href="#">{{item.descricao}}</a></li>
+    </ul>
+  </div> -->
+
+  <form [formGroup]="formUsuarioUpdate">
+    <div class="form-row">
+      <div class="form-group col-md-8">
+        <label>Nome</label>
+        <input type="text"
+        value="{{usuario?.nome}}"
+        [ngClass]="{'is-invalid': formUsuarioUpdate.get('nome').errors
+      && formUsuarioUpdate.get('nome').touched
+
+      }"
+
+        class="form-control" formControlName="nome">
+        <div *ngIf="formUsuarioUpdate.get('nome').hasError('required') && formUsuarioUpdate.get('nome').touched" class="invalid-feedback">
+          Nome é requerido
+        </div>
+        <div *ngIf="formUsuarioUpdate.get('nome').hasError('minlength') && formUsuarioUpdate.get('nome').touched" class="invalid-feedback">
+          Tamanho mínimo de 3 caracteres
+        </div>
+
+      </div>
+      <div class="form-group col-md-4">
+        <label>Ativo</label>
+        {{usuario.ativo}}
+        <select class="form-control"
+        [ngClass]="{'is-invalid': formUsuarioUpdate.get('ativo').errors
+        && formUsuarioUpdate.get('ativo').touched}"
+        formControlName="ativo"
+        >
+        <option ng-selected="usuario.ativo" value="true">Ativo</option>
+        <option ng-selected="!usuario.ativo" value="false">Inativo</option>
+       </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>Email</label>
+        <input type="text"
+        value="{{usuario?.email}}"
+        [ngClass]="{'is-invalid': formUsuarioUpdate.get('email').errors
+        && formUsuarioUpdate.get('email').touched
+      }"
+        class="form-control" formControlName="email">
+        <div class="invalid-feedback">
+          Email é obrigatório
+        </div>
+      </div>
+      <div class="form-group col-md-6">
+        <label>Senha</label>
+        <input type="text"
+        value="{{usuario?.password}}"
+        [ngClass]="{'is-invalid': formUsuarioUpdate.get('password').errors
+        && formUsuarioUpdate.get('password').touched
+      }"
+
+        class="form-control" formControlName="password">
+        <div class="invalid-feedback">
+          Password é obrigatório
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>Sexo</label>
+        <select class="form-control"
+        [ngClass]="{'is-invalid': formUsuarioUpdate.get('idSexo').errors
+        && formUsuarioUpdate.get('idSexo').touched}"
+        formControlName="idSexo"
+        >
+          <option *ngFor="let sexo of sexos"
+          ng-selected="usuario.sexo"
+          [value]=sexo?.id>{{sexo?.descricao}}</option>
+       </select>
+        <!-- <input type="number" class="form-control"
+        value="{{usuario?.sexo}}"
+        [ngClass]="{'is-invalid': formUsuarioUpdate.get('idSexo').errors
+        && formUsuarioUpdate.get('idSexo').touched
+      }"
+        formControlName="idSexo"> -->
+        <div class="invalid-feedback">
+          Sexo é obrigatório
+        </div>
+      </div>
+      <div class="form-group col-md-6">
+        <label>Data de Nascimento</label>
+        <input type="text"
+        value="{{usuario?.dataNascimento | date: 'dd/MM/yyyy'}}"
+        bsDatepicker
+        [ngClass]="{'is-invalid': formUsuarioUpdate.get('dataNascimento').errors
+        && formUsuarioUpdate.get('dataNascimento').touched
+
+      }"
+        class="form-control" formControlName="dataNascimento">
+        <div class="invalid-feedback">
+          Data de Nascimento é obrigatório
+        </div>
+      </div>
+    </div>
+    <!-- <div class="form-row">
+      <div class="form-group col-md-8">
+        <label>Telefone</label>
+        <input type="text" class="form-control" [formGroupName]="name">
+      </div>
+      <div class="form-group col-md-4">
+        <label>Email</label>
+        <input type="text" class="form-control" [formGroupName]="name">
+      </div>
+    </div> -->
+  </form>
+  <br>
+  <button class="btn btn-secondary" (click)="closeModal(template)">
+    Fechar
+  </button>
+  <button class="btn btn-primary"
+  [disabled]="!formUsuarioUpdate.valid"
+  (click)="updateUsuario()">
+    Salvar Alterações
+  </button>
+  <!-- <p>Form Value: {{formUsuarioUpdate.value | json}}</p>
+  <p>Form Status: {{formUsuarioUpdate.status | json}}</p> -->
+  <br>
+  <br>
+</div>
+</ng-template>
+
+
+
